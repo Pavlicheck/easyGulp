@@ -2,10 +2,11 @@
 
 	const settings = {
 		ftp: {
-			use: true,
-			host: 'pro-site.pavlicheck.mcdir.ru',
-			user: 'a227876_admin',
-			pass: '299DH3CFvM'
+			use: false,
+			host: 'host',
+			user: 'user',
+			pass: 'password',
+			path: '/httpdocs/'
 		},
 		src: {
 			src: './project/src/',
@@ -77,7 +78,7 @@
 		 	sourcemaps  = require('gulp-sourcemaps'),
 			bs       	= require('browser-sync').create(),
 			rimraf 		= require('rimraf'),
-			cache    	= require('gulp-cache');
+			cache    	= require('gulp-cache'),
 			ftp    		= require('vinyl-ftp');
 	let		precss      = false;
 
@@ -195,7 +196,7 @@
 	gulp.task('libsJsBuild', () => {
 		gulp.src(_.src.src + 'libsJS/**/*.js')
 	    	.pipe(sourcemaps.init())
-	    	.pipe(concat('libs.js'))
+	    	.pipe(concatJS('libs.js'))
 	    	.pipe(uglify())
 	    	.pipe(sourcemaps.write('/maps'))
 	    	.pipe(gulp.dest(_.src.build + 'libs'))
@@ -295,20 +296,26 @@
 		rimraf(_.src.dist, () => console.log('delete dist'));
 	})
 
-	gulp.task('ftp', () => {
-		var conn = ftp.create( {
-        host: _.ftp.host,
-        user: _.ftp.user,
-        password: _.ftp.pass,
-        parallel: 10,
-        // log:      gutil.log
-    } );
+	gulp.task('ftp', function () {
+		if (_.ftp.use) {
+			var conn = ftp.create( {
+		        host: _.ftp.host,
+		        user: _.ftp.user,
+		        password: _.ftp.pass,
+		        parallel: 10,
+		        // log:      gutil.log
+	    	} );
+			console.log(_.ftp.use)
+    
  
-    let globs = [_.src.dist + '**/*'];
+    		// var globs = [_.src.dist + '**'];
  
-    return gulp.src( globs, { base: '.', buffer: false } )
-        .pipe( conn.newer( '/public_html' ) ) // only upload newer files
-        .pipe( conn.dest( '/public_html' ) );
+   			gulp.src( _.src.dist + '**' )
+        		.pipe( conn.newer( _.ftp.path ) ) // only upload newer files
+        		.pipe( conn.dest( _.ftp.path ) );
+        } else {
+        	console.log("ftp doesn't use")
+        }
 	})
 
 // ######################## Watch #############################
@@ -335,7 +342,7 @@
 
 // ###################### Ditribute ###########################
 	gulp.task('dist', [
-		// 'clearDist',
+						  // 'clearDist',
 						  'htmlDist', 
 						  'cssDist', 
 						  'jsDist', 
