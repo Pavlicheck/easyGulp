@@ -2,10 +2,10 @@
 
 	const settings = {
 		ftp: {
-			use: true,
-			host: 'pro-site.pavlicheck.mcdir.ru',
-			user: 'a227876_admin',
-			pass: '299DH3CFvM'
+			use: false,
+			host: 'host',
+			user: 'user',
+			pass: 'pass'
 		},
 		src: {
 			src: './project/src/',
@@ -218,6 +218,9 @@
 
 	gulp.task('libsJsDist', () => {
 		gulp.src(_.src.src + 'libsJS/**/*.js')
+			.pipe(babel({
+	            	presets: ['env']
+	        }))
 	    	.pipe(concatJS('libs.js'))
 	    	.pipe(uglify())
 	    	.pipe(gulp.dest(_.src.dist + 'libs'))
@@ -313,7 +316,8 @@
 
 // ######################## Watch #############################
 	
-	gulp.task('default', ['clearBuild',
+	gulp.task('default', [
+						  // 'clearBuild',
 						  'htmlBuild', 
 						  'cssBuild', 
 						  'jsBuild', 
@@ -335,7 +339,7 @@
 
 // ###################### Ditribute ###########################
 	gulp.task('dist', [
-		// 'clearDist',
+						//'clearDist',
 						  'htmlDist', 
 						  'cssDist', 
 						  'jsDist', 
@@ -343,6 +347,6 @@
 						  'fontDist',
 						  'libsCssDist',
 						  'libsJsDist', 
-						  'ftp'
+						  // 'ftp'
 						  ] , () => {console.log('Complete')});
 	
