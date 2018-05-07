@@ -5,8 +5,7 @@
 			use: false,
 			host: 'host',
 			user: 'user',
-			pass: 'password',
-			path: '/httpdocs/'
+			pass: 'pass'
 		},
 		src: {
 			src: './project/src/',
@@ -78,7 +77,7 @@
 		 	sourcemaps  = require('gulp-sourcemaps'),
 			bs       	= require('browser-sync').create(),
 			rimraf 		= require('rimraf'),
-			cache    	= require('gulp-cache'),
+			cache    	= require('gulp-cache');
 			ftp    		= require('vinyl-ftp');
 	let		precss      = false;
 
@@ -196,7 +195,7 @@
 	gulp.task('libsJsBuild', () => {
 		gulp.src(_.src.src + 'libsJS/**/*.js')
 	    	.pipe(sourcemaps.init())
-	    	.pipe(concatJS('libs.js'))
+	    	.pipe(concat('libs.js'))
 	    	.pipe(uglify())
 	    	.pipe(sourcemaps.write('/maps'))
 	    	.pipe(gulp.dest(_.src.build + 'libs'))
@@ -219,6 +218,9 @@
 
 	gulp.task('libsJsDist', () => {
 		gulp.src(_.src.src + 'libsJS/**/*.js')
+			.pipe(babel({
+	            	presets: ['env']
+	        }))
 	    	.pipe(concatJS('libs.js'))
 	    	.pipe(uglify())
 	    	.pipe(gulp.dest(_.src.dist + 'libs'))
@@ -296,31 +298,26 @@
 		rimraf(_.src.dist, () => console.log('delete dist'));
 	})
 
-	gulp.task('ftp', function () {
-		if (_.ftp.use) {
-			var conn = ftp.create( {
-		        host: _.ftp.host,
-		        user: _.ftp.user,
-		        password: _.ftp.pass,
-		        parallel: 10,
-		        // log:      gutil.log
-	    	} );
-			console.log(_.ftp.use)
-    
+	gulp.task('ftp', () => {
+		var conn = ftp.create( {
+        host: _.ftp.host,
+        user: _.ftp.user,
+        password: _.ftp.pass,
+        parallel: 10,
+        // log:      gutil.log
+    } );
  
-    		// var globs = [_.src.dist + '**'];
+    let globs = [_.src.dist + '**/*'];
  
-   			gulp.src( _.src.dist + '**' )
-        		.pipe( conn.newer( _.ftp.path ) ) // only upload newer files
-        		.pipe( conn.dest( _.ftp.path ) );
-        } else {
-        	console.log("ftp doesn't use")
-        }
+    return gulp.src( globs, { base: '.', buffer: false } )
+        .pipe( conn.newer( '/public_html' ) ) // only upload newer files
+        .pipe( conn.dest( '/public_html' ) );
 	})
 
 // ######################## Watch #############################
 	
-	gulp.task('default', ['clearBuild',
+	gulp.task('default', [
+						  // 'clearBuild',
 						  'htmlBuild', 
 						  'cssBuild', 
 						  'jsBuild', 
@@ -342,7 +339,7 @@
 
 // ###################### Ditribute ###########################
 	gulp.task('dist', [
-						  // 'clearDist',
+						//'clearDist',
 						  'htmlDist', 
 						  'cssDist', 
 						  'jsDist', 
@@ -350,6 +347,6 @@
 						  'fontDist',
 						  'libsCssDist',
 						  'libsJsDist', 
-						  'ftp'
+						  // 'ftp'
 						  ] , () => {console.log('Complete')});
 	
