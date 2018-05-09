@@ -1,0 +1,1 @@
+{"version":3,"sources":["main.sass","main.css"],"names":[],"mappings":"AAAA;EACC,sBAAqB;EACrB,sBAAqB;CCCrB","file":"../main.css","sourcesContent":["body {\n\tbackground-color: red;\n\tbackground-clip: text; }\n","body {\n  background-color: red;\n  background-clip: text;\n}"]}

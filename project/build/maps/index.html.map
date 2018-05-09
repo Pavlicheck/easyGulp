@@ -1,0 +1,1 @@
+{"version":3,"names":[],"mappings":"","sources":["index.pug"],"sourcesContent":["doctype html\r\nhtml\r\n\thead\r\n\t\tinclude includes/head\r\n\tbody\r\n\t\t| page content\r\n\r\n\t\tinclude includes/footer"],"file":"../index.html"}
